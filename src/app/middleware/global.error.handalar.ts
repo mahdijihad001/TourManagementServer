@@ -9,6 +9,10 @@ import { handleZodError } from "../error/handleZodError";
 
 export const globalerrorHandaler = (err: any, req: Request, res: Response, next: NextFunction) => {
 
+    if(envVar.node_env === "development"){
+        console.log(err)
+    }
+
     let statusCode = 500;
     let message = "Something went wrong!";
     let errorSourse: any = [];
@@ -51,5 +55,5 @@ export const globalerrorHandaler = (err: any, req: Request, res: Response, next:
         message = err.message;
     }
 
-    res.status(statusCode).json({ success: false, message, errorSourse, err, stack: envVar.node_env === "development" ? err?.stack : null })
+    res.status(statusCode).json({ success: false, message, errorSourse, err : envVar.node_env === "development" ? err : null, stack: envVar.node_env === "development" ? err?.stack : null })
 }
