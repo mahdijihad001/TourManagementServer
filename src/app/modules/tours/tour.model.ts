@@ -15,7 +15,8 @@ export const TourTypeModel = model<ITourType>("tourType", tourTypeSchema)
 const tourSchema = new Schema<ITour>({
     title: {
         type: String,
-        required: [true, "Tour Title must be required!"]
+        required: [true, "Tour Title must be required!"],
+        unique : true
     },
     slug: {
         type: String,
@@ -25,7 +26,7 @@ const tourSchema = new Schema<ITour>({
     description: {
         type: String
     },
-    image: {
+    images: {
         type: [String],
         default: []
     },

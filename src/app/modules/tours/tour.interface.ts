@@ -8,7 +8,7 @@ export interface ITour{
     title : string,
     slug : string,
     description ?: string,
-    image ?: string[],
+    images ?: string[],
     location ?: string,
     constFrom ?: number,
     startDate ?: Date,

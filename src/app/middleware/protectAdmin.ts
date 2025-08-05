@@ -8,7 +8,7 @@ import { Role } from "../modules/users/user.interface";
 
 export const checkAuths = (...auths: string[]) => async (req: Request, res: Response, next: NextFunction) => {
 
-    const token = req.headers.authorization;
+    const token = req.cookies.accessToken;
 
     if (!token) {
         throw new AppError(400, "User not authorized!");
@@ -19,9 +19,9 @@ export const checkAuths = (...auths: string[]) => async (req: Request, res: Resp
     if (!validationUser) {
         throw new AppError(401, "User not valid");
     };
-
-    const existUser = await User.findById(validationUser.payload.userId);
-
+    
+    const existUser = await User.findById(validationUser.payload.userID);
+   
     if (!existUser) {
         throw new AppError(StatusCodes.NOT_FOUND, "User not found!");
     }
