@@ -1,20 +1,48 @@
 import { NextFunction, Request, Response } from "express"
 import { envVar } from "../config/env"
 import AppError from "../errorHelpers/app.error";
+import { handleDuplicateError } from "../error/handleDuplicateError";
+import { handleCastError } from "../error/handleCastError";
+import { handleValidationError } from "../error/handleValidationError";
+import { handleZodError } from "../error/handleZodError";
+
 
 export const globalerrorHandaler = (err: any, req: Request, res: Response, next: NextFunction) => {
 
     let statusCode = 500;
     let message = "Something went wrong!";
+    let errorSourse: any = [];
 
+    // Mongoose Duplicate Error Handle
     if (err.code === 11000) {
-        let duplicate = err.message.match(/"([^"]*)"/);
-        message = `${duplicate[1]} already exist!`;
-        statusCode = 400
-    }else if(err.name === "CastError"){
-        statusCode = 400;
-        message = "Invalid MongoDb ObjectId"
+        const simpliedError = handleDuplicateError(err);
+        statusCode = simpliedError.statusCode;
+        message = simpliedError.message
     }
+    // Mongoose Cast Error
+    else if (err.name === "CastError") {
+        const simpliedError = handleCastError(err)
+        statusCode = simpliedError.statusCode;
+        message = simpliedError.message
+    }
+
+    // Mongoose validation Error
+    else if (err.name === "ValidationError") {
+        const simpliedError = handleValidationError(err);
+        statusCode = simpliedError.statusCode;
+        message = simpliedError.message;
+        errorSourse = simpliedError.errorSourse
+
+    }
+
+    // Zod Error
+    else if (err.name === "ZodError") {
+        const simpliedError = handleZodError(err);
+        statusCode = simpliedError.statusCode;
+        message = simpliedError.message;
+        errorSourse = simpliedError.errorSourse
+    }
+
     else if (err instanceof AppError) {
         statusCode = err.statusCode;
         message = err.message;
@@ -23,5 +51,5 @@ export const globalerrorHandaler = (err: any, req: Request, res: Response, next:
         message = err.message;
     }
 
-    res.status(statusCode).json({ success: false, message, err, stack: envVar.node_env === "development" ? err?.stack : null })
+    res.status(statusCode).json({ success: false, message, errorSourse, err, stack: envVar.node_env === "development" ? err?.stack : null })
 }
