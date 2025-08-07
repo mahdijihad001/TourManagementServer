@@ -27,7 +27,13 @@ const createDivision = async (payload: Partial<IDivision>) => {
 };
 
 
-const getAllDivision = async (query : Record<string , string>) => {
+const getAllDivision = async (query: Record<string, string>) => {
+
+    const searchTerm = query.searchTerm;
+    console.log(searchTerm);
+
+    delete query["searchTerm"]
+
     const division = await Division.find(query);
     const totalDivision = await Division.countDocuments();
     if (!division) {

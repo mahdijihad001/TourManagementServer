@@ -1,6 +1,9 @@
+import { Query } from "mongoose";
 import AppError from "../../errorHelpers/app.error";
+import { excludeFild, tourSearchableFild } from "./tour.constain";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourTypeModel } from "./tour.model";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 
 
 // Create Tour
@@ -29,15 +32,64 @@ const createTour = async (payload: Partial<ITour>) => {
 
 };
 
+
+
 // Get all Tour
-const getAllTour = async () => {
+const getAllTour = async (query: Record<string, string>) => {
+
+    const modelQuery = new QueryBuilder(Tour.find(), query);
+
+    const tours = await modelQuery.filter().search(tourSearchableFild).queryModel
+
     const totalTour = await Tour.countDocuments();
-    const allTour = await Tour.find({});
+
     return {
-        allTour,
-        totalTour
+        tours,
+        // meta
     }
 }
+// // Get all Tour
+// const getAllTour = async (query: Record<string, string>) => {
+
+//     const filter = query;
+//     const sort = query.sort || "-createdAt"
+//     const searchTerm = query.searchTerm || "";
+//     const fields = query.fields?.split(",").join(" ") || "";
+//     const page = Number(query.page) || 1;
+//     const limit = Number(query.limit) || 10;
+//     const skip = (page - 1) * limit;
+
+
+
+//     for (var field of excludeFild) {
+//         delete filter[field];
+//     }
+
+//     const queryFilter = {
+//         $or: tourSearchableFild.map((key) => ({ [key]: { $regex: searchTerm, $options: "i" } }))
+//     }
+
+//     const totalTour = await Tour.countDocuments();
+//     // const allTour = await Tour.find(queryFilter).find(filter).sort(sort).select(fields).limit(limit).skip(skip);
+
+//     const queryfilter = Tour.find(filter);
+//     const Tours = queryfilter.find(queryFilter);
+
+//     const allTours = await Tours.sort(sort).select(fields).limit(limit).skip(skip);
+//     const totalPage = Math.ceil(totalTour / limit);
+
+//     const meta = {
+//         total: totalTour,
+//         page: page,
+//         limit: limit,
+//         totalPage
+//     }
+
+//     return {
+//         allTours,
+//         meta
+//     }
+// }
 // Update Tour
 const updateTour = async (id: string, payload: Partial<ITour>) => {
     const existTour = await Tour.findById(id);
@@ -58,13 +110,13 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
 
         let counter = 0;
 
-        while(await Tour.exists({slug : slug})){
+        while (await Tour.exists({ slug: slug })) {
             payload.slug = `${bastSlug}-${counter++}`
         }
 
     };
 
-    const update = await Tour.findByIdAndUpdate(id , payload , {new : true , runValidators : true});
+    const update = await Tour.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
 
     return update
 
@@ -72,11 +124,11 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
 
 // Delete Tour
 
-const deleteTour = async(id : string) =>{
-    const existTour = await Tour.findOne({_id : id});
+const deleteTour = async (id: string) => {
+    const existTour = await Tour.findOne({ _id: id });
 
-    if(!existTour){
-        throw new AppError(404 , "Tour not exist!");
+    if (!existTour) {
+        throw new AppError(404, "Tour not exist!");
     }
 
     await Tour.findByIdAndDelete(id);
