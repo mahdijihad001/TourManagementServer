@@ -16,11 +16,10 @@ const tourSchema = new Schema<ITour>({
     title: {
         type: String,
         required: [true, "Tour Title must be required!"],
-        unique : true
+        unique: true
     },
     slug: {
         type: String,
-        required: [true, "Tour slug must be required!"],
         unique: true
     },
     description: {
@@ -71,10 +70,26 @@ const tourSchema = new Schema<ITour>({
     },
     tourType: {
         type: Schema.Types.ObjectId,
-        ref : "tourType",
-        required : [true , "Tour type must be required"]
+        ref: "tourType",
+        required: [true, "Tour type must be required"]
     }
 
 }, { timestamps: true });
 
-export const Tour = model<ITour>("Tour" , tourSchema);
+tourSchema.pre("save", async function (next) {
+    if (this.isModified("title")) {
+        let baseSlug = this.title.toLowerCase().split(" ").join("-");
+        let slug = `${baseSlug}-tour`;
+        let counter = 0
+        while (await Tour.exists({ slug: slug })) {
+            slug = `${slug}-${counter++}`;
+        }
+        this.slug = slug
+    }
+
+    next();
+})
+
+export const Tour = model<ITour>("Tour", tourSchema);
+
+

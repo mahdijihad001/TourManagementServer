@@ -3,6 +3,7 @@ import catchAsync from "../../utils/catchAsync";
 import { tourServices } from "./tour.services";
 import { sendResponse } from "../../utils/sendResponse";
 import AppError from "../../errorHelpers/app.error";
+import { Tour } from "./tour.model";
 
 const createTour = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
@@ -23,9 +24,42 @@ const createTour = catchAsync(async (req: Request, res: Response, next: NextFunc
     })
 });
 
+const getAllTour = catchAsync(async(req : Request , res : Response , next : NextFunction) =>{
+    const result = await tourServices.getAllTour();
+    sendResponse(res , {
+        statusCode : 200,
+        success : true,
+        message : "All Tour retrived successfully!",
+        data : result.allTour,
+        meta : {
+            total : result.totalTour
+        }
+    })
+})
 
+const updateTour = catchAsync(async(req : Request , res : Response , next : NextFunction) =>{
 
+    const {id} = req.params;
+    const result = await tourServices.updateTour( id ,req.body);
+    
+    sendResponse(res , {
+        statusCode : 200,
+        success : true,
+        message : "Tour Updated successfully!",
+        data : result
+    })
+})
 
+const deleteTour = catchAsync(async(req : Request , res : Response , next : NextFunction) =>{
+    const {id} = req.params;
+    await tourServices.deleteTour(id);
+     sendResponse(res , {
+        statusCode : 200,
+        success : true,
+        message : "Tour deleted successfully!",
+        data : null
+    })
+})
 
 
 
@@ -84,6 +118,9 @@ const deleteTourType = catchAsync(async(req : Request , res : Response , next : 
 
 export const tourController = {
     createTour,
+    getAllTour,
+    updateTour,
+    deleteTour,
     createTourType,
     getAllTourType,
     updateTourType,

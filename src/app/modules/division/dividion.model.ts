@@ -20,5 +20,37 @@ const divisionSchema = new Schema<IDivision>({
 }, { timestamps: true });
 
 
-export const Division = model<IDivision>("Division" , divisionSchema);
- 
+divisionSchema.pre("save", async function (next) {
+    if (this.isModified("name")) {
+        let baseSlug = this.name.toLowerCase().split(" ").join("-");
+        let slug = `${baseSlug}-division`;
+        let counter = 0;
+
+        while (await Division.exists({ slug: this.slug })) {
+            this.slug = `${slug}-${counter++}`
+        };
+        this.slug = slug;
+    }
+    next();
+});
+
+divisionSchema.pre("findOneAndUpdate", async function(next){
+
+    let division = this.getUpdate() as Partial<IDivision>;
+
+    if (division.name) {
+        let baseSlug = division.name.toLowerCase().split(" ").join("-");
+        let slug = `${baseSlug}-division`;
+        let counter = 0;
+
+        while (await Division.exists({ slug: slug })) {
+            slug = `${slug}-${counter++}`
+        }
+        division.slug = slug
+    }
+    this.setUpdate(division);
+    next();
+})
+
+
+export const Division = model<IDivision>("Division", divisionSchema);

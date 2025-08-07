@@ -11,7 +11,7 @@ const divisionRouter = Router();
 divisionRouter.post("/create" , checkAuths(Role.ADMIN , Role.SUPER_ADMIN) , validateRequest(createDivisionZodSchema) ,divisionController.createDivision);
 
 // Get All Division
-divisionRouter.get("/" , checkAuths(...Object.values(Role)) ,divisionController.getAllDivision);
+divisionRouter.get("/" ,divisionController.getAllDivision);
 
 // Update Division
 divisionRouter.patch("/:id" , checkAuths(Role.ADMIN , Role.SUPER_ADMIN) , validateRequest(updateDivisionZodSchema) ,divisionController.updateDivisin);

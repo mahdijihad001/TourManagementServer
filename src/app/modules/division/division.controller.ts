@@ -17,14 +17,15 @@ const createDivision = catchAsync(async (req: Request, res: Response, next: Next
 });
 
 const getAllDivision = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const division = await divisionServices.getAllDivision();
+    const query = req.query;
+    const division = await divisionServices.getAllDivision(query as Record<string , string>);
     sendResponse(res, {
         statusCode: 200,
         success: true,
         message: "All Division retrived successfully!",
         data: division.division,
-        meta : {
-            total : division.meta.total
+        meta: {
+            total: division.meta.total
         }
     })
 });
