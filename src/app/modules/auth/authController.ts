@@ -47,6 +47,16 @@ const logInUser = catchAsync(async (req: Request, res: Response, next: NextFunct
 
 });
 
+// const loginUser1 = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//     const result = await authServices.logInUser(req.body);
+
+//     sendResponse(res, {
+//         statusCode: 200,
+//         success: true,
+//         message: "User Refreshed Successfully!",
+//         data: result
+//     });
+// })
 
 const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 

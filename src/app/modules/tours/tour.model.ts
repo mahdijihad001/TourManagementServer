@@ -88,7 +88,27 @@ tourSchema.pre("save", async function (next) {
     }
 
     next();
-})
+});
+
+tourSchema.pre("findOneAndUpdate", async function (next) {
+
+    let tour = this.getUpdate() as Partial<ITour>;
+
+    if (tour.title) {
+        let baseSlug = tour.title.toLowerCase().split(" ").join("-");
+        let slug = `${baseSlug}-tour`;
+        let counter = 0;
+
+        while (await Tour.exists({ slug: slug })) {
+            slug = `${slug}-${counter++}`
+        }
+        tour.slug = slug
+    }
+    this.setUpdate(tour);
+    next();
+});
+
+
 
 export const Tour = model<ITour>("Tour", tourSchema);
 

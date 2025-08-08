@@ -26,7 +26,6 @@ export class QueryBuilder<T> {
     search(searchableFild: string[]): this {
 
         const searchTerm = this.query.searchTerm || "";
-        console.log(searchTerm);
         const searchQuery = {
             $or: searchableFild.map((fild) => ({ [fild]: { $regex: searchTerm, $options: "i" } }))
         };
