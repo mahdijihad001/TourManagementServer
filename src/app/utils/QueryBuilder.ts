@@ -34,6 +34,44 @@ export class QueryBuilder<T> {
 
         return this
 
+    };
+
+    sort(): this {
+        const sort = this.query.sort || "-createdAt";
+        this.queryModel = this.queryModel.sort(sort);
+        return this;
+    };
+    select(): this {
+        const fields = this.query.fields?.split(",").join(" ") || "";
+        this.queryModel = this.queryModel.select(fields);
+        return this;
+    }
+
+
+    paginate(): this {
+
+        const page = Number(this.query.page) || 1;
+        const limit = Number(this.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        this.queryModel = this.queryModel.limit(limit).skip(skip);
+
+        return this;
+    };
+
+    build() {
+        return this.queryModel
+    };
+
+    async getMeta() {
+        const page = Number(this.query.page) || 1;
+        const limit = Number(this.query.limit) || 10;
+
+        const totalDocumtnt = await this.queryModel.model.countDocuments();
+        const totalPage = Math.ceil(totalDocumtnt / limit);
+
+        return { page, limit, total: totalDocumtnt, totalPage }
+
     }
 
 }

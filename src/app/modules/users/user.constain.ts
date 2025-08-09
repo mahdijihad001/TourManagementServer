@@ -1,0 +1,1 @@
+export const userSearchableFild = ["name" , "email"];

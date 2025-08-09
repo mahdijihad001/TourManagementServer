@@ -1,7 +1,8 @@
-import { Types } from "mongoose";
 import AppError from "../../errorHelpers/app.error";
-import { Division } from "./dividion.model"
-import { IDivision } from "./division.interfaces"
+import { Division } from "./dividion.model";
+import { IDivision } from "./division.interfaces";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { divisionSearchAbleFild } from "./division.constain";
 
 
 const createDivision = async (payload: Partial<IDivision>) => {
@@ -32,21 +33,39 @@ const getAllDivision = async (query: Record<string, string>) => {
     const searchTerm = query.searchTerm;
     console.log(searchTerm);
 
-    delete query["searchTerm"]
+    delete query["searchTerm"];
 
-    const division = await Division.find(query);
-    const totalDivision = await Division.countDocuments();
-    if (!division) {
-        throw new AppError(404, "Division not available");
-    };
+    const baseQuery = new QueryBuilder(Division.find() , query);
+
+    const division = await baseQuery
+    .filter()
+    .search(divisionSearchAbleFild)
+    .sort()
+    .select()
+    .paginate()
+    .build();
+
+    // const division = await Division.find(query);
+    // const totalDivision = await Division.countDocuments();
+    // if (!division) {
+    //     throw new AppError(404, "Division not available");
+    // };
+
+    const totalDivision = await baseQuery.getMeta();
 
     return {
         division,
-        meta: {
-            total: totalDivision
-        }
+        meta: totalDivision
     }
-}
+};
+
+const getSingleDivision = async(slug : string) =>{
+    const findSlug = await Division.findOne({slug : slug});
+    if(!findSlug){
+        throw new AppError(404 , "Division Not found!");
+    };
+    return findSlug;
+};
 
 const updateDivision = async (id: string, payload: Partial<IDivision>) => {
     const findDivision = await Division.findById(id);
@@ -73,6 +92,7 @@ const deleteDivision = async (id: string) => {
 
 export const divisionServices = {
     createDivision,
+    getSingleDivision,
     getAllDivision,
     updateDivision,
     deleteDivision

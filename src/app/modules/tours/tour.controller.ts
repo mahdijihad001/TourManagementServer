@@ -32,7 +32,7 @@ const getAllTour = catchAsync(async(req : Request , res : Response , next : Next
         success : true,
         message : "All Tour retrived successfully!",
         data : result.tours,
-        // meta : result.meta
+        meta : result.meta
     })
 })
 

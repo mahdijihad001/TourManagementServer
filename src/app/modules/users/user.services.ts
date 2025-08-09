@@ -2,9 +2,10 @@ import AppError from "../../errorHelpers/app.error";
 import { IAuthprovider, IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import { StatusCodes } from "http-status-codes";
-import bcrypt from "bcrypt"
 import { JwtPayload } from "jsonwebtoken";
 import { envVar } from "../../config/env";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { userSearchableFild } from "./user.constain";
 
 const createuser = async (payload: Partial<IUser>) => {
 
@@ -12,25 +13,29 @@ const createuser = async (payload: Partial<IUser>) => {
 
     const exixtUser = await User.findOne({ email });
 
-    // if (exixtUser) {
-    //     throw new AppError(StatusCodes.BAD_REQUEST, "email already exist");
-    // };
+    if (exixtUser) {
+        throw new AppError(StatusCodes.BAD_REQUEST, "email already exist");
+    };
 
-    const hashPassword = await bcrypt.hash(password as string, 10);
+    // const hashPassword = await bcrypt.hash(password as string, 10);
 
     const authProvider: IAuthprovider = { provider: "Credentials", prividerId: email as string }
 
-    const user = await User.create({ email, password: hashPassword, auths: [authProvider], ...rest });
+    const user = await User.create({ email, password, auths: [authProvider], ...rest });
     return user;
 };
 
 
-const getAllUsers = async () => {
-    const user = await User.find({});
-    const total = await User.countDocuments();
+const getAllUsers = async (query : Record<string , string>) => {
+    // const user = await User.find({});
+    // const total = await User.countDocuments();
+
+    const queryBuilder = new QueryBuilder(User.find() , query);
+    const user = await queryBuilder.filter().search(userSearchableFild).paginate().sort().select().build();
+    const meta = await queryBuilder.getMeta();
     return {
         user,
-        total
+        meta
     };
 }
 
@@ -57,9 +62,9 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodecToken:
         }
     }
 
-    if (payload.password) {
-        payload.password = await bcrypt.hash(payload.password, 10);
-    }
+    // if (payload.password) {
+    //     payload.password = await bcrypt.hash(payload.password, 10);
+    // }
 
     const updateUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true })
 
@@ -75,7 +80,7 @@ export const seedSuperAdmin = async () => {
         return;
     }
 
-    const hastPassword = await bcrypt.hash(envVar.SUPER_ADMIN_PASSWORD, 10);
+    // const hastPassword = await bcrypt.hash(envVar.SUPER_ADMIN_PASSWORD, 10);
 
     const authProvider: IAuthprovider = {
         prividerId: envVar.SUPER_ADMIN_EMAIL,
@@ -85,7 +90,7 @@ export const seedSuperAdmin = async () => {
     const payload: IUser = {
         name: "Super Admin",
         email: envVar.SUPER_ADMIN_EMAIL,
-        password: hastPassword,
+        password: envVar.SUPER_ADMIN_PASSWORD,
         role: Role.SUPER_ADMIN,
         isVerifid: true,
         auths: [authProvider]

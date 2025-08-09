@@ -25,31 +25,35 @@ const logInUser = async (payload: Partial<IUser>) => {
     const { password: pass, ...rest } = existUser.toObject();
     const token = createUserTokens(existUser);
     return {
-        accessToken : (await token).accessToken,
-        refreshToken : (await token).refreshToken,
-        user : rest
+        accessToken: (await token).accessToken,
+        refreshToken: (await token).refreshToken,
+        user: rest
     }
 };
-const getNewAccessTokenUseRefreshToken = async (refreshToken : string) => {
-   const accessToken = await createAccessTokenWithRefreshToken(refreshToken);
+const getNewAccessTokenUseRefreshToken = async (refreshToken: string) => {
+    const accessToken = await createAccessTokenWithRefreshToken(refreshToken);
     return {
         accessToken
     }
 };
 
 
-const resetPassword = async(decodedToken :  JwtPayload , newPassword : string , oldPassword : string) =>{
+const resetPassword = async (decodedToken: JwtPayload, newPassword: string, oldPassword: string) => {
 
     const findUser = await User.findById(decodedToken.userID);
 
-    const checkOldPasswordMatch = await bcrypt.compare(oldPassword , findUser?.password as string);
+    if (!findUser) {
+        throw new AppError(StatusCodes.NOT_FOUND, "User not found");
+    }
 
-    if(checkOldPasswordMatch){
-        throw new AppError(StatusCodes.UNAUTHORIZED , "Old password dose not exist!");
+    const checkOldPasswordMatch = await bcrypt.compare(oldPassword, findUser?.password as string);
+
+    if (!checkOldPasswordMatch) {
+        throw new AppError(StatusCodes.UNAUTHORIZED, "Old password dose not exist!");
     };
-    
-    findUser!.password = await bcrypt.hash(newPassword , 10);
-    findUser!.save();
+
+    findUser!.password = newPassword;
+    await findUser!.save();
     return null;
 
 }
