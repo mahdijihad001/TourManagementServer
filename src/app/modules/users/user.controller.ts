@@ -37,7 +37,7 @@ const updateUser = catchAsync(async(req : Request , res : Response , next : Next
     };
 
     const payload = req.body;
-    const token = req.headers.authorization;
+    const token = req.cookies.accessToken;
     const verifyUser= verifyToken(token as string) as JwtPayload;
     if(!verifyUser){
         throw new AppError(StatusCodes.FORBIDDEN , "User not valid");
