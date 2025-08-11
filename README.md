@@ -29,6 +29,8 @@ Includes **Role-Based Access Control**, **JWT Authentication** with refresh toke
   - Secure cookies for refresh tokens
   - Sanitized query & request data
 - **Check env variable**
+
+  
   ```
   const loadEnvVariables = (): EnvInterfaces => {
     const requiredEnvVariables: string[] = ["PORT", "MONGO_URI", "NODE_ENVIRONMENT", "ACCESS_SECRATE", "SUPER_ADMIN_PASSWORD", "SUPER_ADMIN_EMAIL", "ACCESS_EXPIERS", "REFRESH_SECRATE", "REFRESH_EXPIRED" , "GOOGLE_CLIENT_ID" , "GOOGLE_CLIENT_SECRET" , "GOOGLE_CALLBACK_URL" , "EXPRESS_SESSION_SECRATE" , "FRONTEND_URL"];
@@ -78,7 +80,6 @@ Includes **Role-Based Access Control**, **JWT Authentication** with refresh toke
 
 -find - filter - search - sort - pagination - metaData
 
-```
 
 export class QueryBuilder<T> {
     public queryModel: Query<T[], T>;
