@@ -10,7 +10,7 @@ const generateTransectionId = () => {
     const result = `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
     return result
 }
-
+// Jihadanu1@
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
     const transectionId = generateTransectionId();
 
@@ -33,26 +33,26 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
 
         const totalAmount = Number(tour.constFrom) * Number(payload.guestCount);
 
-        const booking = await Booking.create({
+        const booking = await Booking.create([{
             user: userId,
             status: IBookingStatus.PENDING,
             ...payload
-        }, { session });
+        }], { session });
 
-        const payment = await Payment.create({
+        const payment = await Payment.create([{
             booking: booking[0]._id,
             transectionId: transectionId,
             status: PAYMENT_STATUS.UNPAID,
             amount: totalAmount
-        }, { session })
+        }], { session })
 
 
-        const updateBooking = await Booking.findByIdAndUpdate(booking[0]._id, { payment: payment[0]._id }, { new: true, runValidators: true, session }).populate("user").populate("tour").populate("payment");
+        const updateBooking = await Booking.findByIdAndUpdate(booking[0]._id, { payment: payment[0]._id }, { new: true, runValidators: true, session }).populate("user" , "name email phone").populate("tour" , "title constFrom startDate endDate").populate("payment");
 
 
         await session.commitTransaction();
         session.endSession();
-        
+
         return updateBooking;
     } catch (error) {
         await session.abortTransaction();

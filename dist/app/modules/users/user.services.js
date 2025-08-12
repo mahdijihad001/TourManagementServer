@@ -28,8 +28,9 @@ const app_error_1 = __importDefault(require("../../errorHelpers/app.error"));
 const user_interface_1 = require("./user.interface");
 const user_model_1 = require("./user.model");
 const http_status_codes_1 = require("http-status-codes");
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const env_1 = require("../../config/env");
+const QueryBuilder_1 = require("../../utils/QueryBuilder");
+const user_constain_1 = require("./user.constain");
 const createuser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = payload, rest = __rest(payload, ["email", "password"]);
     const exixtUser = yield user_model_1.User.findOne({ email });
@@ -37,17 +38,20 @@ const createuser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         throw new app_error_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, "email already exist");
     }
     ;
-    const hashPassword = yield bcrypt_1.default.hash(password, 10);
+    // const hashPassword = await bcrypt.hash(password as string, 10);
     const authProvider = { provider: "Credentials", prividerId: email };
-    const user = yield user_model_1.User.create(Object.assign({ email, password: hashPassword, auths: [authProvider] }, rest));
+    const user = yield user_model_1.User.create(Object.assign({ email, password, auths: [authProvider] }, rest));
     return user;
 });
-const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.find({});
-    const total = yield user_model_1.User.countDocuments();
+const getAllUsers = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    // const user = await User.find({});
+    // const total = await User.countDocuments();
+    const queryBuilder = new QueryBuilder_1.QueryBuilder(user_model_1.User.find(), query);
+    const user = yield queryBuilder.filter().search(user_constain_1.userSearchableFild).paginate().sort().select().build();
+    const meta = yield queryBuilder.getMeta();
     return {
         user,
-        total
+        meta
     };
 });
 const updateUser = (userId, payload, decodecToken) => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,9 +72,9 @@ const updateUser = (userId, payload, decodecToken) => __awaiter(void 0, void 0, 
             throw new app_error_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, "You cannot update account status!");
         }
     }
-    if (payload.password) {
-        payload.password = yield bcrypt_1.default.hash(payload.password, 10);
-    }
+    // if (payload.password) {
+    //     payload.password = await bcrypt.hash(payload.password, 10);
+    // }
     const updateUser = yield user_model_1.User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true });
     return updateUser;
 });
@@ -80,7 +84,7 @@ const seedSuperAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
         console.log("Super admin already exist!");
         return;
     }
-    const hastPassword = yield bcrypt_1.default.hash(env_1.envVar.SUPER_ADMIN_PASSWORD, 10);
+    // const hastPassword = await bcrypt.hash(envVar.SUPER_ADMIN_PASSWORD, 10);
     const authProvider = {
         prividerId: env_1.envVar.SUPER_ADMIN_EMAIL,
         provider: "Credentials"
@@ -88,7 +92,7 @@ const seedSuperAdmin = () => __awaiter(void 0, void 0, void 0, function* () {
     const payload = {
         name: "Super Admin",
         email: env_1.envVar.SUPER_ADMIN_EMAIL,
-        password: hastPassword,
+        password: env_1.envVar.SUPER_ADMIN_PASSWORD,
         role: user_interface_1.Role.SUPER_ADMIN,
         isVerifid: true,
         auths: [authProvider]

@@ -16,11 +16,21 @@ interface EnvInterfaces {
     GOOGLE_CLIENT_SECRET : string,
     GOOGLE_CALLBACK_URL : string,
     EXPRESS_SESSION_SECRATE : string,
-    FRONTEND_URL : string
+    FRONTEND_URL : string,
+    STORE_ID : string,
+    STORE_PASSWORD : string,
+    SSL_PAYMENT_API : string,
+    SSL_VALIDATION_API : string,
+    SSL_CLINT_SUCCESS_URL : string,
+    SSL_CLINT_FAIL_URL : string,
+    SSL_CLINT_CANCEL_URL : string,
+    SSL_BACKEND_SUCCESS_URL : string,
+    SSL_BACKEND_FAIL_URL : string,
+    SSL_BACKEND_CANCEL_URL : string
 };
 
 const loadEnvVariables = (): EnvInterfaces => {
-    const requiredEnvVariables: string[] = ["PORT", "MONGO_URI", "NODE_ENVIRONMENT", "ACCESS_SECRATE", "SUPER_ADMIN_PASSWORD", "SUPER_ADMIN_EMAIL", "ACCESS_EXPIERS", "REFRESH_SECRATE", "REFRESH_EXPIRED" , "GOOGLE_CLIENT_ID" , "GOOGLE_CLIENT_SECRET" , "GOOGLE_CALLBACK_URL" , "EXPRESS_SESSION_SECRATE" , "FRONTEND_URL"];
+    const requiredEnvVariables: string[] = ["PORT", "MONGO_URI", "NODE_ENVIRONMENT", "ACCESS_SECRATE", "SUPER_ADMIN_PASSWORD", "SUPER_ADMIN_EMAIL", "ACCESS_EXPIERS", "REFRESH_SECRATE", "REFRESH_EXPIRED" , "GOOGLE_CLIENT_ID" , "GOOGLE_CLIENT_SECRET" , "GOOGLE_CALLBACK_URL" , "EXPRESS_SESSION_SECRATE" , "FRONTEND_URL" , "STORE_ID" , "STORE_PASSWORD" , "SSL_PAYMENT_API" , "SSL_VALIDATION_API" , "SSL_CLINT_SUCCESS_URL" , "SSL_CLINT_FAIL_URL" , "SSL_CLINT_CANCEL_URL" , "SSL_BACKEND_SUCCESS_URL" , "SSL_BACKEND_FAIL_URL" , "SSL_BACKEND_CANCEL_URL"];
 
     requiredEnvVariables.forEach(key => {
         if (!process.env[key]) {
@@ -43,6 +53,16 @@ const loadEnvVariables = (): EnvInterfaces => {
         GOOGLE_CALLBACK_URL : process.env.GOOGLE_CALLBACK_URL as string,
         EXPRESS_SESSION_SECRATE : process.env.EXPRESS_SESSION_SECRATE as string,
         FRONTEND_URL : process.env.FRONTEND_URL as string,
+        STORE_ID : process.env.STORE_ID as string,
+        STORE_PASSWORD : process.env.STORE_PASSWORD as string,
+        SSL_PAYMENT_API : process.env.SSL_PAYMENT_API as string,
+        SSL_VALIDATION_API : process.env.SSL_VALIDATION_API as string,
+        SSL_CLINT_SUCCESS_URL : process.env.SSL_CLINT_SUCCESS_URL as string,
+        SSL_CLINT_FAIL_URL : process.env.SSL_CLINT_FAIL_URL as string,
+        SSL_CLINT_CANCEL_URL : process.env.SSL_CLINT_CANCEL_URL as string,
+        SSL_BACKEND_SUCCESS_URL : process.env.SSL_BACKEND_SUCCESS_URL as string,
+        SSL_BACKEND_FAIL_URL : process.env.SSL_BACKEND_FAIL_URL as string,
+        SSL_BACKEND_CANCEL_URL : process.env.SSL_BACKEND_CANCEL_URL as string,
     }
 }
 

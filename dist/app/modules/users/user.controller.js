@@ -30,15 +30,13 @@ const createUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
     });
 }));
 const getAllUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const users = yield user_services_1.userServices.getAllUsers();
+    const users = yield user_services_1.userServices.getAllUsers(req.query);
     (0, sendResponse_1.sendResponse)(res, {
         success: true,
         statusCode: http_status_codes_1.StatusCodes.OK,
         message: "All users retrieved successfully!",
         data: users.user,
-        meta: {
-            total: users.total
-        }
+        meta: users.meta
     });
 }));
 const updateUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -48,7 +46,7 @@ const updateUser = (0, catchAsync_1.default)((req, res, next) => __awaiter(void 
     }
     ;
     const payload = req.body;
-    const token = req.headers.authorization;
+    const token = req.cookies.accessToken;
     const verifyUser = (0, jwt_1.verifyToken)(token);
     if (!verifyUser) {
         throw new app_error_1.default(http_status_codes_1.StatusCodes.FORBIDDEN, "User not valid");

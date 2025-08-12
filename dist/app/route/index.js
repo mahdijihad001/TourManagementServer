@@ -7,6 +7,9 @@ exports.route = void 0;
 const express_1 = require("express");
 const user_router_1 = __importDefault(require("../modules/users/user.router"));
 const authRouter_1 = require("../modules/auth/authRouter");
+const tour_router_1 = __importDefault(require("../modules/tours/tour.router"));
+const division_route_1 = __importDefault(require("../modules/division/division.route"));
+const booking_router_1 = __importDefault(require("../modules/booking/booking.router"));
 exports.route = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -16,6 +19,18 @@ const moduleRoutes = [
     {
         path: "/auth",
         routes: authRouter_1.authRouter
+    },
+    {
+        path: "/tour",
+        routes: tour_router_1.default
+    },
+    {
+        path: "/division",
+        routes: division_route_1.default
+    },
+    {
+        path: "/booking",
+        routes: booking_router_1.default
     }
 ];
 moduleRoutes.forEach((rou) => {
