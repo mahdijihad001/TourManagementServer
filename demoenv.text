@@ -1,5 +1,5 @@
 PORT=3500
-MONGO_URI=your mongodb uri
+MONGO_URI=mongodb+srv://phTourManagementDb:C9VlUU32UI3y7xIj@cluster0.bzhgo.mongodb.net/phTourManagementServer?retryWrites=true&w=majority&appName=Cluster0
 # Devlopment Environment
 NODE_ENVIRONMENT=development
 # Jwt Secrate
@@ -13,8 +13,8 @@ SUPER_ADMIN_EMAIL=superadmin@gmail.com
 SUPER_ADMIN_PASSWORD=12345678
 
 # google Authentication use Pasport.js
-GOOGLE_CLIENT_ID=your google clint id
-GOOGLE_CLIENT_SECRET=your google clint id
+GOOGLE_CLIENT_ID=Your Google Clint Secrate ID
+GOOGLE_CLIENT_SECRET=Your Google Clint Secrate
 GOOGLE_CALLBACK_URL=http://localhost:3500/api/v1/auth/google/collback
 
 
@@ -23,3 +23,18 @@ EXPRESS_SESSION_SECRATE=express_secrate
 
 # Frontend Url
 FRONTEND_URL=http://localhost:5173
+
+# SSL-commerz
+STORE_ID=progr689a384bf27fc
+STORE_PASSWORD=progr689a384bf27fc@ssl
+SSL_PAYMENT_API=https://sandbox.sslcommerz.com/gwprocess/v3/api.php
+SSL_VALIDATION_API=https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php
+
+# SSL-commerz
+SSL_CLINT_SUCCESS_URL=http://localhost:5173/payment/success
+SSL_CLINT_FAIL_URL=http://localhost:5173/payment/fail
+SSL_CLINT_CANCEL_URL=http://localhost:5173/payment/cancel
+
+SSL_BACKEND_SUCCESS_URL=http://localhost:3500/api/v1/payment/success
+SSL_BACKEND_FAIL_URL=http://localhost:3500/api/v1/payment/fail
+SSL_BACKEND_CANCEL_URL=http://localhost:3500/api/v1/payment/cancel
