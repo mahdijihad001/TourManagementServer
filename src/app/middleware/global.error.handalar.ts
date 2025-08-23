@@ -41,8 +41,6 @@ export const globalerrorHandaler = (err: any, req: Request, res: Response, next:
 
     // Zod Error
     else if (err.name === "ZodError") {
-        console.log("-------------------------")
-        console.log(err.issues);
         const simpliedError = handleZodError(err);
         statusCode = simpliedError.statusCode;
         message = simpliedError.message;

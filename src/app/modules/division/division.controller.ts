@@ -5,7 +5,10 @@ import { sendResponse } from "../../utils/sendResponse";
 
 
 const createDivision = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const division = await divisionServices.createDivision(req.body);
+
+    const thumbnail = req.file?.path
+
+    const division = await divisionServices.createDivision(req.body , thumbnail as string);
 
     sendResponse(res, {
         statusCode: 200,

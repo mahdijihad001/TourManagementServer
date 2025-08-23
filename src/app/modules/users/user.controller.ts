@@ -35,7 +35,7 @@ const updateUser = catchAsync(async(req : Request , res : Response , next : Next
     if(!mongoose.Types.ObjectId.isValid(id)){
         throw new AppError(StatusCodes.FORBIDDEN , "User not valid");
     };
-
+    
     const payload = req.body;
     const token = req.cookies.accessToken;
     const verifyUser= verifyToken(token as string) as JwtPayload;

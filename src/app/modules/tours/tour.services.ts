@@ -6,78 +6,6 @@ import { Tour, TourTypeModel } from "./tour.model";
 import {  Query } from "mongoose";
 
 
-// class PrcticesQueryBuilder<T> {
-//     public queryModel: Query<T[], T>;
-//     public readonly query: Record<string, string>;
-
-//     constructor(queryModel: Query<T[], T>, query: Record<string, string>) {
-//         this.queryModel = queryModel;
-//         this.query = query
-//     };
-
-
-//     filter(): this {
-//         const filter = { ...this.query };
-
-//         for (const value of excludeFild) {
-//             delete filter[value];
-//         };
-//         this.queryModel = this.queryModel.find(filter);
-//         return this
-//     };
-
-//     search(): this {
-
-//         const searchTerm = this.query.searchTerm || "";
-
-//         const searchQuery = {
-//             $or: tourSearchableFild.map((key) => ({ [key]: { $regex: searchTerm, $options: "i" } }))
-//         };
-
-//         this.queryModel = this.queryModel.find(searchQuery);
-
-//         return this;
-//     };
-
-//     sort(): this {
-//         const sort = this.query.sort || "-createdAt";
-
-//         this.queryModel = this.queryModel.sort(sort);
-
-//         return this
-//     };
-
-//     filds(): this {
-//         const field = this.query.filds?.split(",").join(" ") || "";
-
-//         this.queryModel = this.queryModel.select(field);
-//         return this
-//     };
-
-//     paginate(): this {
-
-//         const page = Number(this.query.page) || 1;
-//         const limit = Number(this.query.limit) || 10;
-//         const spip = (page - 1) * limit;
-
-//         this.queryModel = this.queryModel.skip(spip).limit(limit);
-
-//         return this;
-//     }
-
-//     build() {
-//         return this.queryModel;
-//     };
-
-//     async getMeta() {
-//         const totalData = await this.queryModel.model.countDocuments();
-//         const page = Number(this.query.page) || 1;
-//         const limit = Number(this.query.limit) || 10;
-//         const totalPage = Math.ceil(totalData / limit)
-//         return {total : totalData , page , limit , totalPage}
-//     }
-// }
-
 // Create Tour
 const createTour = async (payload: Partial<ITour>) => {
 
@@ -162,6 +90,9 @@ const getAllTour = async (query: Record<string, string>) => {
 //         meta
 //     }
 // }
+
+
+
 // Update Tour
 const updateTour = async (id: string, payload: Partial<ITour>) => {
     const existTour = await Tour.findById(id);

@@ -23,7 +23,6 @@ const startServer = async () => {
     }
 };
 
-startServer();
 (async() =>{
     await startServer();
     await seedSuperAdmin();

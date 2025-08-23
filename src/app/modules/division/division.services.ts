@@ -5,7 +5,8 @@ import { QueryBuilder } from "../../utils/QueryBuilder";
 import { divisionSearchAbleFild } from "./division.constain";
 
 
-const createDivision = async (payload: Partial<IDivision>) => {
+const createDivision = async (payload: Partial<IDivision> , thumbnail : string) => {
+
     const existDivision = await Division.findOne({ name: payload.name });
 
     if (existDivision) {
@@ -23,7 +24,12 @@ const createDivision = async (payload: Partial<IDivision>) => {
 
     // payload.slug = slug
 
-    const division = await Division.create(payload);
+    const data = {
+        ...payload,
+        thumbnail : thumbnail
+    }
+
+    const division = await Division.create(data);
     return division
 };
 

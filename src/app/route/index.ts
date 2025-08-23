@@ -34,3 +34,16 @@ const moduleRoutes = [
 moduleRoutes.forEach((rou) =>{
     route.use(rou.path , rou.routes);
 })
+
+
+
+
+
+
+ 
+
+
+
+
+
+ 
