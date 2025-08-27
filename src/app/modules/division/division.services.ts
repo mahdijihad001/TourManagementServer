@@ -3,9 +3,10 @@ import { Division } from "./dividion.model";
 import { IDivision } from "./division.interfaces";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { divisionSearchAbleFild } from "./division.constain";
+import { deleteImageFormCloudinary } from "../../config/cloudinary.config";
 
 
-const createDivision = async (payload: Partial<IDivision> , thumbnail : string) => {
+const createDivision = async (payload: Partial<IDivision>, thumbnail: string) => {
 
     const existDivision = await Division.findOne({ name: payload.name });
 
@@ -26,7 +27,7 @@ const createDivision = async (payload: Partial<IDivision> , thumbnail : string) 
 
     const data = {
         ...payload,
-        thumbnail : thumbnail
+        thumbnail: thumbnail
     }
 
     const division = await Division.create(data);
@@ -41,15 +42,15 @@ const getAllDivision = async (query: Record<string, string>) => {
 
     delete query["searchTerm"];
 
-    const baseQuery = new QueryBuilder(Division.find() , query);
+    const baseQuery = new QueryBuilder(Division.find(), query);
 
     const division = await baseQuery
-    .filter()
-    .search(divisionSearchAbleFild)
-    .sort()
-    .select()
-    .paginate()
-    .build();
+        .filter()
+        .search(divisionSearchAbleFild)
+        .sort()
+        .select()
+        .paginate()
+        .build();
 
     // const division = await Division.find(query);
     // const totalDivision = await Division.countDocuments();
@@ -65,10 +66,10 @@ const getAllDivision = async (query: Record<string, string>) => {
     }
 };
 
-const getSingleDivision = async(slug : string) =>{
-    const findSlug = await Division.findOne({slug : slug});
-    if(!findSlug){
-        throw new AppError(404 , "Division Not found!");
+const getSingleDivision = async (slug: string) => {
+    const findSlug = await Division.findOne({ slug: slug });
+    if (!findSlug) {
+        throw new AppError(404, "Division Not found!");
     };
     return findSlug;
 };
@@ -82,17 +83,22 @@ const updateDivision = async (id: string, payload: Partial<IDivision>) => {
 
     const duplicateDivision = await Division.find({ name: payload.name, _id: { $ne: id } });
 
-    if (duplicateDivision) {
+    if (duplicateDivision.length > 0) {
         throw new AppError(400, "A division this name already hare.");
     };
 
     const update = await Division.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
 
+    if (payload.thumbnail && findDivision.thumbnail) {
+        await deleteImageFormCloudinary(findDivision.thumbnail);
+    }
+
     return update
 };
 
 const deleteDivision = async (id: string) => {
-    await Division.findByIdAndDelete(id);
+    const find = await Division.findByIdAndDelete(id);
+    await deleteImageFormCloudinary(find?.thumbnail as string);
     return null
 }
 

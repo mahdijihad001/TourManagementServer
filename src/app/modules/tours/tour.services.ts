@@ -3,7 +3,7 @@ import { QueryBuilder } from "../../utils/QueryBuilder";
 import { excludeFild, tourSearchableFild } from "./tour.constain";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourTypeModel } from "./tour.model";
-import {  Query } from "mongoose";
+import { Query } from "mongoose";
 
 
 // Create Tour
@@ -37,10 +37,10 @@ const createTour = async (payload: Partial<ITour>) => {
 // Get all Tour
 const getAllTour = async (query: Record<string, string>) => {
 
-  const queryBuilder = new QueryBuilder(Tour.find() , query);
+    const queryBuilder = new QueryBuilder(Tour.find(), query);
 
     let tours = await queryBuilder
-    .filter().search(tourSearchableFild).select().sort().paginate().build();
+        .filter().search(tourSearchableFild).select().sort().paginate().build();
     const meta = await queryBuilder.getMeta();
 
     return {
@@ -118,6 +118,15 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
         }
 
     };
+
+    if (payload.images && payload.images.length > 0 && existTour.images && existTour.images.length > 0) {
+        payload.images = [...payload.images, ...existTour.images]
+    };
+
+    if (payload.deletedImages && payload.deletedImages.length > 0 && existTour.images && existTour.images.length > 0) {
+        const filterImage = existTour.images.filter((image) => !payload.images?.includes(image));
+        payload.images = [...filterImage, ...(payload.images || [])];
+    }
 
     const update = await Tour.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
 

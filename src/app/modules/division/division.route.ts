@@ -18,7 +18,7 @@ divisionRouter.get("/", divisionController.getAllDivision);
 divisionRouter.get("/:slug", divisionController.getSingleDivision);
 
 // Update Division
-divisionRouter.patch("/:id", checkAuths(Role.ADMIN, Role.SUPER_ADMIN), validateRequest(updateDivisionZodSchema), divisionController.updateDivisin);
+divisionRouter.patch("/:id", checkAuths(Role.ADMIN, Role.SUPER_ADMIN), multerUpload.single("file") ,validateRequest(updateDivisionZodSchema), divisionController.updateDivisin);
 
 // Delete Division
 divisionRouter.delete("/:id", checkAuths(Role.ADMIN, Role.SUPER_ADMIN), divisionController.deleteDivision)

@@ -8,7 +8,7 @@ export const validateRequest = (zodSchema: AnyZodObject) => async (req: Request,
             try {
                 req.body = JSON.parse(req.body.data)
             } catch (error) {
-                return res.status(400).json({success : false, message : "Invalid JSON formate data"})
+                return res.status(400).json({success : false, message : "Invalid Form-data formate"})
             }
         }
 

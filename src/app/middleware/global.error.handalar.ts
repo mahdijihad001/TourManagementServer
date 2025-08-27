@@ -5,12 +5,24 @@ import { handleDuplicateError } from "../error/handleDuplicateError";
 import { handleCastError } from "../error/handleCastError";
 import { handleValidationError } from "../error/handleValidationError";
 import { handleZodError } from "../error/handleZodError";
+import { deleteImageFormCloudinary } from "../config/cloudinary.config";
 
 
-export const globalerrorHandaler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const globalerrorHandaler = async(err: any, req: Request, res: Response, next: NextFunction) => {
 
     if(envVar.node_env === "development"){
         console.log(err)
+    };
+
+    if(req.file){
+        await deleteImageFormCloudinary(req.file.path);
+    };
+
+    if(req.files && Array.isArray(req.files) && req.files.length){
+        const imageUrl = (req.files as Express.Multer.File[]).map((data) => data.path);
+
+        await Promise.all(imageUrl.map((url) => deleteImageFormCloudinary(url)))
+
     }
 
     let statusCode = 500;

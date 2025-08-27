@@ -44,7 +44,13 @@ const getAllTour = catchAsync(async (req: Request, res: Response, next: NextFunc
 const updateTour = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const { id } = req.params;
-    const result = await tourServices.updateTour(id, req.body);
+
+    const payload = {
+        ...req.body,
+        images: (req.files as Express.Multer.File[]).map((file) => file.path)
+    }
+
+    const result = await tourServices.updateTour(id, payload);
 
     sendResponse(res, {
         statusCode: 200,
