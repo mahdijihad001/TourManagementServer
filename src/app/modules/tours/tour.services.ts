@@ -1,3 +1,4 @@
+import { deleteImageFormCloudinary } from "../../config/cloudinary.config";
 import AppError from "../../errorHelpers/app.error";
 import { QueryBuilder } from "../../utils/QueryBuilder";
 import { excludeFild, tourSearchableFild } from "./tour.constain";
@@ -120,15 +121,24 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
     };
 
     if (payload.images && payload.images.length > 0 && existTour.images && existTour.images.length > 0) {
-        payload.images = [...payload.images, ...existTour.images]
+        payload.images = [...new Set([...payload.images, ...existTour.images])]
     };
 
     if (payload.deletedImages && payload.deletedImages.length > 0 && existTour.images && existTour.images.length > 0) {
-        const filterImage = existTour.images.filter((image) => !payload.images?.includes(image));
-        payload.images = [...filterImage, ...(payload.images || [])];
+        const restDbImages = existTour.images.filter((image) => !payload.deletedImages?.includes(image));
+
+        const updatedPayloadImages = (payload.images || [])
+            .filter((images) => !payload.deletedImages?.includes(images));
+
+        payload.images = [...new Set([...restDbImages, ...updatedPayloadImages])];
     }
 
     const update = await Tour.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
+
+
+    if (payload.deletedImages && payload.deletedImages.length > 0 && existTour.images && existTour.images.length > 0) {
+        await Promise.all(payload.deletedImages.map((url) => deleteImageFormCloudinary(url)));
+    }
 
     return update
 
