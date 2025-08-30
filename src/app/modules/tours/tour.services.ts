@@ -136,9 +136,9 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
     const update = await Tour.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
 
 
-    if (payload.deletedImages && payload.deletedImages.length > 0 && existTour.images && existTour.images.length > 0) {
+    if (payload.deletedImages && payload.deletedImages.length > 0 && existTour.images && existTour.images.length > 0){
         await Promise.all(payload.deletedImages.map((url) => deleteImageFormCloudinary(url)));
-    }
+    };
 
     return update
 

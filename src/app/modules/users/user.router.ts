@@ -9,9 +9,12 @@ const userRouter = Router();
 
 
 
+
+
 userRouter.post("/register", validateRequest(createZodSchema), userController.createUser);
-userRouter.get("/user", checkAuths(Role.ADMIN , Role.SUPER_ADMIN) ,userController.getAllUser);
-userRouter.patch("/:id" , validateRequest(updateuserZodSchema) , checkAuths(...Object.values(Role)) , userController.updateUser)
+userRouter.get("/user", checkAuths(Role.ADMIN, Role.SUPER_ADMIN), userController.getAllUser);
+userRouter.get("/me", checkAuths(...Object.values(Role)), userController.getMe);
+userRouter.patch("/:id", validateRequest(updateuserZodSchema), checkAuths(...Object.values(Role)), userController.updateUser)
 
 
 export default userRouter

@@ -1,5 +1,5 @@
 import AppError from "../../errorHelpers/app.error";
-import { IUser } from "../users/user.interface";
+import { IAuthprovider, IUser } from "../users/user.interface";
 import { User } from "../users/user.model";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from 'bcrypt';
@@ -57,10 +57,41 @@ const resetPassword = async (decodedToken: JwtPayload, newPassword: string, oldP
     return null;
 
 }
+const changePassword = async (decodedToken: JwtPayload, newPassword: string, oldPassword: string) => {
+
+
+}
+const setPassword = async (userId: string, password: string) => {
+
+    const findUser = await User.findById(userId);
+
+    if (!findUser) {
+        throw new AppError(404, "User not found.");
+    }
+
+    if (findUser.password && findUser.auths.some((providerobj) => providerobj.provider === "Google")) {
+        throw new AppError(400, "You have already set your password. You can update your password in your profile");
+    };
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const creadiantialProvider: IAuthprovider = {
+        provider: "Credentials",
+        prividerId: findUser.email
+    };
+
+    findUser.password = hashPassword;
+    findUser.auths = [...findUser.auths, creadiantialProvider];
+
+    await findUser.save()
+
+}
 
 
 export const authServices = {
     logInUser,
     getNewAccessTokenUseRefreshToken,
-    resetPassword
+    resetPassword,
+    changePassword,
+    setPassword
 }

@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import { envVar } from "./env";
 import { User } from "../modules/users/user.model";
-import { Role } from "../modules/users/user.interface";
+import { IsActive, Role } from "../modules/users/user.interface";
 import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcrypt"
 
@@ -22,6 +22,11 @@ passport.use(
 
             if (!isUserExist) {
                 return done(null, false, { message: "User not exist!" });
+            };
+
+            if (isUserExist.isActive === IsActive.BLOCKED || isUserExist.isActive === IsActive.INACTIVE) {
+                // throw new AppError(400, `User is ${isUserExist.isActive}`);
+                return done(`User is ${isUserExist.isActive}`);
             };
 
             const isGoogleauthenticate = isUserExist.auths.some(provider => provider.provider == "Google");

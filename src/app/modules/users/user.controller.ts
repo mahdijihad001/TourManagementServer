@@ -10,52 +10,67 @@ import { JwtPayload } from "jsonwebtoken";
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const user = await userServices.createuser(req.body);
-    sendResponse(res , {
-        statusCode : StatusCodes.CREATED,
-        success : true,
-        message : "User careated successfully!",
-        data : user
+    sendResponse(res, {
+        statusCode: StatusCodes.CREATED,
+        success: true,
+        message: "User careated successfully!",
+        data: user
     })
 });
 
 const getAllUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const users = await userServices.getAllUsers(req.query as Record<string , string>);
+    const users = await userServices.getAllUsers(req.query as Record<string, string>);
 
-    sendResponse(res , {
-        success : true,
-        statusCode : StatusCodes.OK,
-        message : "All users retrieved successfully!",
-        data : users.user,
-        meta : users.meta
+    sendResponse(res, {
+        success: true,
+        statusCode: StatusCodes.OK,
+        message: "All users retrieved successfully!",
+        data: users.user,
+        meta: users.meta
     })
 });
 
-const updateUser = catchAsync(async(req : Request , res : Response , next : NextFunction) =>{
-    const {id} = req.params;
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        throw new AppError(StatusCodes.FORBIDDEN , "User not valid");
+const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new AppError(StatusCodes.FORBIDDEN, "User not valid");
     };
-    
+
     const payload = req.body;
     const token = req.cookies.accessToken;
-    const verifyUser= verifyToken(token as string) as JwtPayload;
-    if(!verifyUser){
-        throw new AppError(StatusCodes.FORBIDDEN , "User not valid");
+    const verifyUser = verifyToken(token as string) as JwtPayload;
+    if (!verifyUser) {
+        throw new AppError(StatusCodes.FORBIDDEN, "User not valid");
     };
 
-    const user = await userServices.updateUser(id , payload , verifyUser);
+    const user = await userServices.updateUser(id, payload, verifyUser);
 
-    sendResponse(res , {
-        statusCode : StatusCodes.OK,
-        message : "User updated Successfully",
-        data : user,
-        success : true
+    sendResponse(res, {
+        statusCode: StatusCodes.OK,
+        message: "User updated Successfully",
+        data: user,
+        success: true
     })
 
 });
+
+const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.user as JwtPayload;
+
+    const result = await userServices.getMe(userId.userID);
+
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Profile retrived successfully!",
+        data: result
+    })
+
+})
 
 export const userController = {
     createUser,
     getAllUser,
-    updateUser
+    updateUser,
+    getMe
 }

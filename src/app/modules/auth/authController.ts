@@ -15,7 +15,7 @@ const logInUser = catchAsync(async (req: Request, res: Response, next: NextFunct
     passport.authenticate("local", async (err: any, user: any, info: any) => {
 
         if (err) {
-            return next(new AppError(401, err));
+            return next(new AppError(401, err.message));
         }
 
         if (!user) {
@@ -112,6 +112,31 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
         data: null
     })
 });
+const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Password changed successfully!",
+        data: null
+    })
+});
+const setPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const decodedToken = req.user as JwtPayload;
+    const { password } = req.body;
+
+    await authServices.setPassword(decodedToken.userID, password)
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Password changed successfully!",
+        data: null
+    })
+});
 
 
 const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -141,5 +166,7 @@ export const authController = {
     getNewAccessToken,
     logOut,
     resetPassword,
+    changePassword,
+    setPassword,
     googleCallbackController
 }

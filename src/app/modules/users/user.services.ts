@@ -26,11 +26,11 @@ const createuser = async (payload: Partial<IUser>) => {
 };
 
 
-const getAllUsers = async (query : Record<string , string>) => {
+const getAllUsers = async (query: Record<string, string>) => {
     // const user = await User.find({});
     // const total = await User.countDocuments();
 
-    const queryBuilder = new QueryBuilder(User.find() , query);
+    const queryBuilder = new QueryBuilder(User.find(), query);
     const user = await queryBuilder.filter().search(userSearchableFild).paginate().sort().select().build();
     const meta = await queryBuilder.getMeta();
     return {
@@ -51,7 +51,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodecToken:
             throw new AppError(StatusCodes.FORBIDDEN, "You are not authorized");
         }
 
-        if (payload.role === Role.SUPER_ADMIN && decodecToken.payload.role === Role.ADMIN){
+        if (payload.role === Role.SUPER_ADMIN && decodecToken.payload.role === Role.ADMIN) {
             throw new AppError(StatusCodes.FORBIDDEN, "You are not authorized")
         }
     }
@@ -102,9 +102,15 @@ export const seedSuperAdmin = async () => {
 };
 
 
+const getMe = async (userId: string) => {
+    const user = await User.findById(userId).select("-password");
+    return user;
+}
+
 
 export const userServices = {
     createuser,
     getAllUsers,
-    updateUser
+    updateUser,
+    getMe
 }

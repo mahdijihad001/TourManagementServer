@@ -1,4 +1,5 @@
 import AppError from "../../errorHelpers/app.error";
+import { generateTransectionId } from "../../utils/getTransectionId";
 import { PAYMENT_STATUS } from "../payment/payment.interface";
 import { Payment } from "../payment/payment.model";
 import { Tour } from "../tours/tour.model";
@@ -6,10 +7,7 @@ import { User } from "../users/user.model";
 import { IBooking, IBookingStatus } from "./booking.interface";
 import { Booking } from "./booning.model";
 
-const generateTransectionId = () => {
-    const result = `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-    return result
-}
+
 // Jihadanu1@
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
     const transectionId = generateTransectionId();
