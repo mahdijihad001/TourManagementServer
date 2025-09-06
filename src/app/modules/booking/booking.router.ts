@@ -21,6 +21,6 @@ bookingRouter.get("/myBooking" , checkAuths(...Object.values(Role)) , bookingCon
 bookingRouter.get("/:bookingId" , checkAuths(...Object.values(Role)) , bookingController.getSingleBooking);
 
 // Update Booking
-bookingRouter.patch("/:bookingId/status" , checkAuths(...Object.values(Role)) , bookingController.updateBooking);
+bookingRouter.patch("/:bookingId/status" , checkAuths(Role.ADMIN , Role.SUPER_ADMIN) , bookingController.updateBooking);
 
 export default bookingRouter;

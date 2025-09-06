@@ -2,6 +2,7 @@ import AppError from "../../errorHelpers/app.error";
 import { ISSL_commerz } from "../../SSL_commerz/SSL.commerz.interface";
 import { sslServices } from "../../SSL_commerz/SSL.commerz.services";
 import { generateTransectionId } from "../../utils/getTransectionId";
+import { QueryBuilder } from "../../utils/QueryBuilder";
 import { PAYMENT_STATUS } from "../payment/payment.interface";
 import { Payment } from "../payment/payment.model";
 import { Tour } from "../tours/tour.model";
@@ -17,7 +18,7 @@ interface PaymentIUser {
     name: string
 }
 
-// Jihadanu1@
+
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
     const transectionId = generateTransectionId();
 
@@ -82,20 +83,30 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
 
 };
 
-const getAllBooking = async () => {
-    return {};
+const getAllBooking = async (query: Record<string, string>) => {
+    const queryBuilder = new QueryBuilder(Booking.find(), query);
+    const bookingSearchablseFilds = ["user", "tour", "payment"]
+
+    const booking = await queryBuilder.filter().search(bookingSearchablseFilds).paginate().sort().select().build();
+
+    const meta = await queryBuilder.getMeta();
+
+    return { booking, meta };
 };
 
-const getUserBooking = async () => {
-    return {};
+const getUserBooking = async (userId: string) => {
+    const getBooking = await Booking.find({ user: userId }).populate("tour").populate("payment")
+    return getBooking
 };
 
-const updateBooking = async () => {
-    return {};
+const updateBooking = async (bookingId : string, status : string) => {
+    const updataBooking = await Booking.findByIdAndUpdate(bookingId , {status : status} , {new : true , runValidators : true});
+    return updataBooking
 }
 
-const getSingleBooking = async () => {
-    return {};
+const getSingleBooking = async (bookingId : string) => {
+    const result = await Booking.findById(bookingId);
+    return result;
 };
 
 export const bookingServices = {
