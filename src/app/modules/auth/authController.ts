@@ -112,9 +112,12 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
         data: null
     })
 });
-const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
+const forgetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
+    const { email } = req.body;
+
+    await authServices.forgetPassword(email);
 
     sendResponse(res, {
         success: true,
@@ -166,7 +169,7 @@ export const authController = {
     getNewAccessToken,
     logOut,
     resetPassword,
-    changePassword,
+    forgetPassword,
     setPassword,
     googleCallbackController
 }

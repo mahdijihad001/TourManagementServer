@@ -9,10 +9,10 @@ const SSL_payment = async (payload: ISSL_commerz) => {
             total_amount: payload.amount,
             currency: 'BDT',
             tran_id: payload.transectionId, // use unique tran_id for each api call
-            success_url: `http://localhost:3030/success?transectionId=${payload.transectionId}`,
-            fail_url: `http://localhost:3030/fail?transectionId=${payload.transectionId}`,
-            cancel_url: `http://localhost:3030/cancel?transectionId=${payload.transectionId}`,
-            ipn_url: 'http://localhost:3030/ipn',
+            success_url: `${envVar.SSL_BACKEND_SUCCESS_URL}/?transection_id=${payload.transectionId}&amount=${payload.amount}&status=success`,
+            fail_url: `${envVar.SSL_BACKEND_SUCCESS_URL}/?transection_id=${payload.transectionId}&amount=${payload.amount}&status=fail`,
+            cancel_url: `${envVar.SSL_BACKEND_SUCCESS_URL}/?transection_id=${payload.transectionId}&amount=${payload.amount}&status=calcel`,
+            // ipn_url: 'http://localhost:3030/ipn',
             shipping_method: 'Courier',
             product_name: 'Computer.',
             product_category: 'Electronic',
@@ -44,10 +44,17 @@ const SSL_payment = async (payload: ISSL_commerz) => {
             headers: { "Content-Type": "application/x-www-form-urlencoded" }
         });
 
-        return result
+        const finalData = await result.data;
+
+        return finalData;
+
     } catch (error) {
-        console.log("SSL-Commerz Payment Error : " , error);
-        throw new AppError(400 , "SSL-commarz Payment faild");
+        console.log("SSL-Commerz Payment Error : ", error);
+        throw new AppError(400, "SSL-commarz Payment faild");
     }
 
-}
+};
+
+export const sslServices = {
+    SSL_payment
+};

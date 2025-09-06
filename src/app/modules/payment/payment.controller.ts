@@ -1,62 +1,41 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync";
-import { sendResponse } from "../../utils/sendResponse";
+import { paymentServices } from "./paymentservice";
+import { envVar } from "../../config/env";
 
-const createPayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await bookingServices.createBooking();
-    sendResponse(res, {
-        statusCode: 201,
-        success: true,
-        message: "Booking Created SuccessfullY!",
-        data: result
-    })
+const successPayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query;
+
+    const result = await paymentServices.successPayment(query as Record<string, string>);
+
+    if (result.success) {
+        res.redirect(`${envVar.SSL_CLINT_SUCCESS_URL}?transection_id=${query.transection_id}&amount=${query.amount}&status=${query.status}`);
+    }
+
+})
+const faildPayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query;
+
+    const result = await paymentServices.faildPayment(query as Record<string, string>);
+
+    if (!result.success) {
+        res.redirect(`${envVar.SSL_CLINT_FAIL_URL}?transection_id=${query.transection_id}&amount=${query.amount}&status=${query.status}`);
+    }
+})
+const cancelPayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const query = req.query;
+
+    const result = await paymentServices.cancelPayment(query as Record<string, string>);
+
+    if (!result.success) {
+        res.redirect(`${envVar.SSL_CLINT_CANCEL_URL}?transection_id=${query.transection_id}&amount=${query.amount}&status=${query.status}`);
+    }
 });
 
-const getAllpayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await bookingServices.getAllBooking();
-    sendResponse(res, {
-        statusCode: 200,
-        success: true,
-        message: "All Booking Retrived SuccessfullY!",
-        data: result
-    })
-});
-
-const getUserPayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await bookingServices.getUserBooking();
-    sendResponse(res, {
-        statusCode: 200,
-        success: true,
-        message: "Booking Retrived SuccessfullY!",
-        data: result
-    })
-});
-
-const updatePayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await bookingServices.updateBooking();
-    sendResponse(res, {
-        statusCode: 200,
-        success: true,
-        message: "Booking Update SuccessfullY!",
-        data: result
-    })
-});
-
-const deletePayment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    await bookingServices.deleteBooking();
-    sendResponse(res, {
-        statusCode: 200,
-        success: true,
-        message: "Booking Deleted SuccessfullY!",
-        data: null
-    })
-});
 
 
 export const paymentController = {
-    createPayment,
-    getAllpayment,
-    getUserPayment,
-    updatePayment,
-    deletePayment
+    successPayment,
+    faildPayment,
+    cancelPayment
 }

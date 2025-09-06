@@ -3,9 +3,13 @@ import { IAuthprovider, IUser } from "../users/user.interface";
 import { User } from "../users/user.model";
 import { StatusCodes } from "http-status-codes";
 import bcrypt from 'bcrypt';
+import jwt from "jsonwebtoken";
 import { createUserTokens } from "../../utils/createUserToken";
 import { createAccessTokenWithRefreshToken } from "../../utils/createSccessTokenWithRefreshToken";
 import { JwtPayload } from "jsonwebtoken";
+import { envVar } from "../../config/env";
+import { sendEmail } from "../../utils/sendEmail";
+
 
 const logInUser = async (payload: Partial<IUser>) => {
     const { email, password } = payload;
@@ -57,8 +61,32 @@ const resetPassword = async (decodedToken: JwtPayload, newPassword: string, oldP
     return null;
 
 }
-const changePassword = async (decodedToken: JwtPayload, newPassword: string, oldPassword: string) => {
+const forgetPassword = async (email: string) => {
 
+    const isExistUser = await User.findOne({ email });
+    if (!isExistUser) {
+        throw new AppError(400, "User not found");
+    };
+
+    const payload = {
+        userID: isExistUser._id,
+        email: isExistUser.email,
+        role: isExistUser.role
+    };
+
+    const token = jwt.sign(payload, envVar.ACCESS_SECRATE, { expiresIn: "10m" });
+
+    const resetUILink = `${envVar.FRONTEND_URL}/reset-password?id=${isExistUser._id}&token=${token}`;
+
+    sendEmail({
+        to: isExistUser.email,
+        subject: "Forgate password request",
+        templateName: `forgetPasswors`,
+        templateData: {
+            name: isExistUser.name,
+            resetUILink
+        }
+    })
 
 }
 const setPassword = async (userId: string, password: string) => {
@@ -92,6 +120,6 @@ export const authServices = {
     logInUser,
     getNewAccessTokenUseRefreshToken,
     resetPassword,
-    changePassword,
+    forgetPassword,
     setPassword
 }

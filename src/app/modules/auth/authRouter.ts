@@ -10,7 +10,7 @@ authRouter.post("/login", authController.logInUser);
 authRouter.post("/refresh-token", authController.getNewAccessToken);
 authRouter.post("/logout", authController.logOut);
 authRouter.post("/resetPassword", checkAuths(...Object.values(Role)), authController.resetPassword);
-authRouter.post("/changePassword", checkAuths(...Object.values(Role)), authController.changePassword);
+authRouter.post("/changePassword", authController.forgetPassword);
 authRouter.post("/setPassword", checkAuths(...Object.values(Role)), authController.setPassword);
 authRouter.get("/google", async (req: Request, res: Response, next: NextFunction) => {
     const redirect = req.query.redirect || "/";

@@ -1,4 +1,6 @@
 import AppError from "../../errorHelpers/app.error";
+import { ISSL_commerz } from "../../SSL_commerz/SSL.commerz.interface";
+import { sslServices } from "../../SSL_commerz/SSL.commerz.services";
 import { generateTransectionId } from "../../utils/getTransectionId";
 import { PAYMENT_STATUS } from "../payment/payment.interface";
 import { Payment } from "../payment/payment.model";
@@ -7,6 +9,13 @@ import { User } from "../users/user.model";
 import { IBooking, IBookingStatus } from "./booking.interface";
 import { Booking } from "./booning.model";
 
+interface PaymentIUser {
+    _id: string,
+    address: string,
+    email: string,
+    phone: string,
+    name: string
+}
 
 // Jihadanu1@
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {
@@ -45,13 +54,26 @@ const createBooking = async (payload: Partial<IBooking>, userId: string) => {
         }], { session })
 
 
-        const updateBooking = await Booking.findByIdAndUpdate(booking[0]._id, { payment: payment[0]._id }, { new: true, runValidators: true, session }).populate("user" , "name email phone").populate("tour" , "title constFrom startDate endDate").populate("payment");
+        const updateBooking = await Booking.findByIdAndUpdate(booking[0]._id, { payment: payment[0]._id }, { new: true, runValidators: true, session }).populate("user", "name email phone address").populate("tour", "title constFrom startDate endDate").populate("payment");
 
+        const userPopulated = updateBooking?.user as unknown as PaymentIUser;
+
+        const paymentGet = await sslServices.SSL_payment({
+            address: userPopulated.address,
+            phone: userPopulated.phone,
+            email: userPopulated.email,
+            name: userPopulated.name,
+            transectionId: transectionId,
+            amount: totalAmount
+        });
 
         await session.commitTransaction();
         session.endSession();
 
-        return updateBooking;
+        return {
+            booking: updateBooking,
+            paymentUrl: paymentGet?.GatewayPageURL
+        };
     } catch (error) {
         await session.abortTransaction();
         session.endSession();
